@@ -1,5 +1,7 @@
 alabaster==0.7.9
 Babel==2.3.4
+docker==2.0.0
+docker-pycreds==0.2.1
 docutils==0.12
 imagesize==0.7.1
 Jinja2==2.8
@@ -17,3 +19,4 @@ snowballstemmer==1.2.1
 Sphinx==1.4.8
 sphinx-rtd-theme==0.1.9
 termcolor==1.1.0
+websocket-client==0.40.0
