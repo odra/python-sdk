@@ -1,5 +1,6 @@
 import json
 import base64
+import uuid
 
 import docker
 
@@ -27,10 +28,13 @@ def run(name, path=None, data=None, args=None, namespace='sumatraio',
     params.append('%s' % base64.b64encode(helpers.code_to_json(data).encode('utf8')).decode('utf8'))
     params.append('--encode')
   if as_json is True:
-    params.append('--json') 
-  ouput = _engine.containers.run(image, params, name=name)
+    params.append('--json')
+  full_fn_name = helpers.get_fn_name(data).replace('.', '-')
+  full_fn_name = '%s-%s' % (full_fn_name, uuid.uuid5(uuid.uuid4(), full_fn_name))
+  print(full_fn_name)
+  ouput = _engine.containers.run(image, params, name=full_fn_name)
   if auto_kill is True:
-    cleanup(name)
+    cleanup(full_fn_name)
   return ouput
 
 
