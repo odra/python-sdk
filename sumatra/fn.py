@@ -5,7 +5,7 @@ from functools import wraps
 import requests
 import json
 
-from sumatra import client, errors
+from sumatra import client, errors, helpers, dockerengine
 
 
 def parse(func):
@@ -35,7 +35,7 @@ def parse(func):
   return data
 
 
-def fn(remote_only=True):
+def fn(remote_only=True, platform='python-2.7'):
   """
   Decorator to speicify a function to be run in the remote server.
 
@@ -48,9 +48,8 @@ def fn(remote_only=True):
   def decorator(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
-      function = parse(fn)
       try:
-        return call(function)
+        return call(fn)
       except errors.ServiceReachError as e:
         if remote_only is False:
           return fn(*args, **kwargs)
@@ -68,26 +67,8 @@ def call(data):
   Returns:
     A dict with the parsed json
   """
-  (app_name, app_token) = client.data()
-  if app_name is None or app_token is None:
-    raise errors.CredentialsError()
-  (protocol, host, port) = client.server()
-  url_keys = '%s://%s.%s:%s'
-  url_values = (protocol, app_name, host, port)
-  url = url_keys % url_values
-  headers = {
-    'Authentication': 'Bearer %s' % app_token,
-    'Content-Type': 'application/json'
-  }
-  try:
-    req = requests.post(url, data=json.dumps(data), headers=headers)
-  except requests.exceptions.ConnectionError:
-    raise errors.ServiceReachError(url)
-  try:
-    res = req.json()
-  except json.decoder.JSONDecodeError:
-    raise errors.ResponseFormatError(req.text)
-  if 'error' in res:
-    raise errors.FunctionError(res['error'])
-  return res['result']
-  
+  output = dockerengine.run('random-name', data=data)
+  result = json.loads(output.decode('utf8'))
+  if 'error' in result:
+    raise errors.FunctionError(result['error'])
+  return result['result']  
