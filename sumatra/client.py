@@ -3,16 +3,14 @@ import os
 
 import yaml
 
-from sumatra import errors
-
-_app_name = None
-_app_token = None
-_protocol = 'http'
-_host = 'fn.sumatra.io'
-_port =  80
+from sumatra import errors, dockerengine
 
 
-def bootstrap(name=None, token=None, file=None, **kwargs):
+_url = None
+_encoding = None
+
+
+def bootstrap(url='unix://var/run/docker.sock', encoding='utf8', file=None):
   """
   Bootstraps the client with a name, token and server data to access the remote server.
   
@@ -22,37 +20,13 @@ def bootstrap(name=None, token=None, file=None, **kwargs):
   param: host(str) - the server hostname to be used when creating the request
   param: port(int) - the server port to use
   """
-  bootstrap_server(**kwargs)
+  global _url
+  global _encoding
+  _url = url
+  _encoding = encoding
   if file is not None:
-    bootstrap_from_file(file)
-    return
-  bootstrap_app(name, token)
-
-
-def bootstrap_server(protocol='http', host='fn.sumatra.io', port=80):
-  """
-  bootstraps the server properties
-
-  param: procotol(str) - sets the request protocol, only supports http or https
-  param: host(str) - the server hostname to be used when creating the request
-  param: port(int) - the server port to use
-  """
-  global _protocol
-  global _host
-  global _port
-  (_protocol, _host, _port) = (protocol, host, port)
-
-
-def bootstrap_app(name, token):
-  """
-  bootstraps the application data (name and token) to use on each request
-
-  param: name(str) - application name
-  param: token(str) - application secret token
-  """
-  global _app_name
-  global _app_token
-  (_app_name, _app_token) = (name, token)
+    return bootstrap_from_file(file)
+  return dockerengine.bootstrap(url)
 
 
 def bootstrap_from_file(path):
@@ -70,9 +44,7 @@ def bootstrap_from_file(path):
       raise errors.ConfigFileParseError(path)
     cfg = cfg.get('sumatra')
     server = cfg.get('server', {})
-    (app, token) = (cfg.get('name'), cfg.get('token'))
-    bootstrap_server(**server)
-    bootstrap_app(app, token)
+    bootstrap(**server)
 
 
 def data():
@@ -82,23 +54,13 @@ def data():
   Returns:
     A tuple containing the application name and token.
   """
-  return (_app_name, _app_token)
-
-
-def server():
-  """
-  Gets the client server information
-
-  Returns:
-    A tuple containing the application protocol, hostname and port
-  """
-  return (_protocol, _host, _port)
+  return (_url, _encoding)
 
 
 def reset():
   """
   Resets the application name and token (sets both to None).
   """
-  global _app_name
-  global _app_token
-  (_app_name, _app_token) = (None, None)
+  global _url
+  global _encoding
+  (_url, _encoding) = (None, None)

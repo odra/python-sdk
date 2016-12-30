@@ -1,11 +1,8 @@
 {
   "sumatra": {
-    "name": "myapp",
-    "token": "12345",
     "server": {
-      "protocol": "http",
-      "host": "fn.sumatraio",
-      "port": 80
+      "url": "unix://var/run/docker.sock",
+      "encoding": "utf8"
     }
   }
 }

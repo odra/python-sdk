@@ -5,6 +5,11 @@ import inspect
 BYTES_PROPS = ('code', 'lnotab')
 
 
+def get_fn_name(fn):
+  module = inspect.getmodule(fn).__name__
+  return '%s.%s' % (module, fn.__name__)
+
+
 def is_code_prop(prop):
   if 'kwonlyargcount' in prop:
     return False

@@ -18,7 +18,7 @@ def func():
 
 @pytest.fixture
 def bootstrap():
-  client.bootstrap('myapp', '12345', protocol='https')
+  client.bootstrap('unix://var/run/docker.sock', 'utf8')
 
 
 def test_decorator(func, bootstrap):

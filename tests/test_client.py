@@ -11,7 +11,7 @@ yaml_file = '%s/fixtures/.sumatra.yaml' % current_dir
 
 @pytest.fixture
 def bootstrap():
-  client.bootstrap('name', 'token')
+  client.bootstrap('unix://var/run/docker.sock', 'utf8')
 
 
 @pytest.fixture
@@ -20,42 +20,42 @@ def reset():
 
 
 def test_empty_vars():
-  (name, token)  = client.data()
-  assert name is None
-  assert token is None 
+  (url, encoding)  = client.data()
+  assert url is None
+  assert encoding is None 
 
 
 def test_vars(bootstrap):
-  (name, token)  = client.data()
-  assert name == 'name'
-  assert token == 'token' 
+  (url, encoding)  = client.data()
+  assert url == 'unix://var/run/docker.sock'
+  assert encoding == 'utf8' 
 
 
 def test_vars_again():
-  (name, token)  = client.data()
-  assert name == 'name'
-  assert token == 'token'
+  (url, encoding)  = client.data()
+  assert url == 'unix://var/run/docker.sock'
+  assert encoding == 'utf8'
 
 
 def test_clean():
   client.reset()
-  (name, token)  = client.data()
-  assert name is None
-  assert token is None
+  (url, encoding)  = client.data()
+  assert url is None
+  assert encoding is None
 
 
 def test_file_path(reset):
   client.bootstrap(file=yaml_file)
-  (name, token)  = client.data()
-  assert name == 'myapp'
-  assert token == '12345'
+  (url, encoding)  = client.data()
+  assert url == 'unix://var/run/docker.sock'
+  assert encoding == 'utf8'
 
 
 def test_file_path_json(reset):
   client.bootstrap(file=yaml_file.replace('.yaml', '.json'))
-  (name, token)  = client.data()
-  assert name == 'myapp'
-  assert token == '12345'
+  (url, encoding)  = client.data()
+  assert url == 'unix://var/run/docker.sock'
+  assert encoding == 'utf8'
 
 
 def test_invalid_file_path(reset):

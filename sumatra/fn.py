@@ -71,4 +71,4 @@ def call(data):
   result = json.loads(output.decode('utf8'))
   if 'error' in result:
     raise errors.FunctionError(result['error'])
-  return result['result']  
+  return result['result']
