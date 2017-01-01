@@ -14,11 +14,9 @@ def bootstrap(url='unix://var/run/docker.sock', encoding='utf8', file=None):
   """
   Bootstraps the client with a name, token and server data to access the remote server.
   
-  param: name(str) -  the remote application name
-  param: token(str) - the token be used to access the remote application
-  param: procotol(str) - sets the request protocol, only supports http or https
-  param: host(str) - the server hostname to be used when creating the request
-  param: port(int) - the server port to use
+  param: url(str) -  the remote application url
+  param: encoding(str) - the encoding to be used by several parts of the application, default is utf-8
+  param: file(str) - file config path to be used (json or yaml) instead of hardcoded config.
   """
   global _url
   global _encoding
@@ -49,17 +47,17 @@ def bootstrap_from_file(path):
 
 def data():
   """
-  Gets the client application name and token in a tuple.
+  Gets the client application url and encoding in a tuple.
 
   Returns:
-    A tuple containing the application name and token.
+    A tuple containing the application url and encoding.
   """
   return (_url, _encoding)
 
 
 def reset():
   """
-  Resets the application name and token (sets both to None).
+  Resets the application url and encoding (sets both to None).
   """
   global _url
   global _encoding
